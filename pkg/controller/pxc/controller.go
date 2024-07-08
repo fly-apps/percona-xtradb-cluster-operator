@@ -310,15 +310,16 @@ func (r *ReconcilePerconaXtraDBCluster) Reconcile(ctx context.Context, request r
 
 	inits := []corev1.Container{}
 	if o.CompareVersionWith("1.5.0") >= 0 {
-		var initResources corev1.ResourceRequirements
-		if o.CompareVersionWith("1.6.0") >= 0 {
-			initResources = o.Spec.PXC.Resources
-		}
-		if o.Spec.InitContainer.Resources != nil {
-			initResources = *o.Spec.InitContainer.Resources
-		}
-		initC := statefulset.EntrypointInitContainer(initImageName, app.DataVolumeName, initResources, o.Spec.PXC.ContainerSecurityContext, o.Spec.PXC.ImagePullPolicy)
-		inits = append(inits, initC)
+		// FKS: disable haproxy init container for the main container
+		// var initResources corev1.ResourceRequirements
+		// if o.CompareVersionWith("1.6.0") >= 0 {
+		// 	initResources = o.Spec.PXC.Resources
+		// }
+		// if o.Spec.InitContainer.Resources != nil {
+		// 	initResources = *o.Spec.InitContainer.Resources
+		// }
+		// initC := statefulset.EntrypointInitContainer(initImageName, app.DataVolumeName, initResources, o.Spec.PXC.ContainerSecurityContext, o.Spec.PXC.ImagePullPolicy)
+		// inits = append(inits, initC)
 	}
 
 	pxcSet := statefulset.NewNode(o)
@@ -551,15 +552,16 @@ func (r *ReconcilePerconaXtraDBCluster) deploy(ctx context.Context, cr *api.Perc
 	}
 	inits := []corev1.Container{}
 	if cr.CompareVersionWith("1.5.0") >= 0 {
-		var initResources corev1.ResourceRequirements
-		if cr.CompareVersionWith("1.6.0") >= 0 {
-			initResources = cr.Spec.PXC.Resources
-		}
-		if cr.Spec.InitContainer.Resources != nil {
-			initResources = *cr.Spec.InitContainer.Resources
-		}
-		initC := statefulset.EntrypointInitContainer(initImageName, app.DataVolumeName, initResources, cr.Spec.PXC.ContainerSecurityContext, cr.Spec.PXC.ImagePullPolicy)
-		inits = append(inits, initC)
+		// FKS: disable haproxy init container for the main container
+		// var initResources corev1.ResourceRequirements
+		// if cr.CompareVersionWith("1.6.0") >= 0 {
+		// 	initResources = cr.Spec.PXC.Resources
+		// }
+		// if cr.Spec.InitContainer.Resources != nil {
+		// 	initResources = *cr.Spec.InitContainer.Resources
+		// }
+		// initC := statefulset.EntrypointInitContainer(initImageName, app.DataVolumeName, initResources, cr.Spec.PXC.ContainerSecurityContext, cr.Spec.PXC.ImagePullPolicy)
+		// inits = append(inits, initC)
 	}
 
 	secretsName := cr.Spec.SecretsName

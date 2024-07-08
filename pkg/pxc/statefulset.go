@@ -98,9 +98,17 @@ func StatefulSet(ctx context.Context, cl client.Client, sfs api.StatefulApp, pod
 	if err != nil {
 		return nil, errors.Wrap(err, "sidecar container")
 	}
+
 	pod.Containers = append(pod.Containers, appC)
-	pod.Containers = append(pod.Containers, sideC...)
-	pod.Containers = api.AddSidecarContainers(log, pod.Containers, podSpec.Sidecars)
+
+	// FKS: Disable sidecar containers, but pass env vars to the main container
+
+	pod.Containers[0].Env = append(pod.Containers[0].Env, sideC[0].Env...)
+
+	//pod.Containers = append(pod.Containers, sideC...)
+	//pod.Containers = api.AddSidecarContainers(log, pod.Containers, podSpec.Sidecars)
+
+	// VolumesMounts for sidecar containers appear to already be added to the main container
 	pod.Volumes = api.AddSidecarVolumes(log, pod.Volumes, podSpec.SidecarVolumes)
 
 	ls := sfs.Labels()
