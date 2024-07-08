@@ -25,12 +25,15 @@ func SecretKeySelector(name, key string) *corev1.SecretKeySelector {
 }
 
 func HTTPCheckProbe(probe *corev1.Probe, path string, port int) *corev1.Probe {
-	encodedPath := url.QueryEscape(path)
+
+	queryParams := url.Values{}
+	queryParams.Set("script", path)
+	fullPath := "/?" + queryParams.Encode()
 
 	return &corev1.Probe{
 		ProbeHandler: corev1.ProbeHandler{
 			HTTPGet: &corev1.HTTPGetAction{
-				Path: encodedPath,
+				Path: fullPath,
 				Port: intstr.FromInt(port),
 			},
 		},
