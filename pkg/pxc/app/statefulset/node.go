@@ -86,17 +86,17 @@ func (c *Node) AppContainer(spec *api.PodSpec, secrets string, cr *api.PerconaXt
 		Name:            app.Name,
 		Image:           spec.Image,
 		ImagePullPolicy: spec.ImagePullPolicy,
-		ReadinessProbe: app.Probe(&corev1.Probe{
+		ReadinessProbe: app.HTTPCheckProbe(&corev1.Probe{
 			InitialDelaySeconds: redinessDelay,
 			TimeoutSeconds:      15,
 			PeriodSeconds:       30,
 			FailureThreshold:    5,
-		}, "/var/lib/mysql/readiness-check.sh"),
-		LivenessProbe: app.Probe(&corev1.Probe{
+		}, "/var/mysql/readiness-check.sh", 8090),
+		LivenessProbe: app.HTTPCheckProbe(&corev1.Probe{
 			InitialDelaySeconds: livenessDelay,
 			TimeoutSeconds:      5,
 			PeriodSeconds:       10,
-		}, "/var/lib/mysql/liveness-check.sh"),
+		}, "/var/mysql/liveness-check.sh", 8090),
 		Args:    []string{"mysqld"},
 		Command: []string{"/var/lib/mysql/pxc-entrypoint.sh"},
 		Ports: []corev1.ContainerPort{

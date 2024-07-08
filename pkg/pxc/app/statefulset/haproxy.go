@@ -143,12 +143,12 @@ func (c *HAProxy) AppContainer(spec *api.PodSpec, secrets string, cr *api.Percon
 		if spec.LivenessInitialDelaySeconds != nil {
 			livenessDelay = *spec.LivenessInitialDelaySeconds
 		}
-		appc.LivenessProbe = app.Probe(&corev1.Probe{
+		appc.LivenessProbe = app.HTTPCheckProbe(&corev1.Probe{
 			InitialDelaySeconds: livenessDelay,
 			TimeoutSeconds:      5,
 			PeriodSeconds:       30,
 			FailureThreshold:    4,
-		}, "/usr/local/bin/readiness-check.sh")
+		}, "/usr/local/bin/readiness-check.sh", 8090)
 	}
 	if cr.CompareVersionWith("1.9.0") >= 0 {
 		fvar := true
@@ -175,14 +175,15 @@ func (c *HAProxy) AppContainer(spec *api.PodSpec, secrets string, cr *api.Percon
 			},
 		)
 
-		appc.LivenessProbe = &cr.Spec.HAProxy.LivenessProbes
-		appc.ReadinessProbe = &cr.Spec.HAProxy.ReadinessProbes
-		appc.ReadinessProbe.Exec = &corev1.ExecAction{
-			Command: []string{"/usr/local/bin/readiness-check.sh"},
-		}
-		appc.LivenessProbe.Exec = &corev1.ExecAction{
-			Command: []string{"/usr/local/bin/liveness-check.sh"},
-		}
+		// FKS: Liveness and readiness probes are set already as HTTP probes
+		// appc.LivenessProbe = &cr.Spec.HAProxy.LivenessProbes
+		// appc.ReadinessProbe = &cr.Spec.HAProxy.ReadinessProbes
+		// appc.ReadinessProbe.Exec = &corev1.ExecAction{
+		// 	Command: []string{"/usr/local/bin/readiness-check.sh"},
+		// }
+		// appc.LivenessProbe.Exec = &corev1.ExecAction{
+		// 	Command: []string{"/usr/local/bin/liveness-check.sh"},
+		// }
 		probsEnvs := []corev1.EnvVar{
 			{
 				Name:  "LIVENESS_CHECK_TIMEOUT",
