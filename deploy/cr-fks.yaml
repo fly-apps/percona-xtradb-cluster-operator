@@ -199,7 +199,7 @@ spec:
   #        exec:
   #          command: [ "/bin/true" ]
   haproxy:
-    enabled: true
+    enabled: false
     size: 3
     image: perconalab/percona-xtradb-cluster-operator:main-haproxy
     #    imagePullPolicy: Always
@@ -538,7 +538,7 @@ spec:
   #   loadBalancerSourceRanges:
   #     - 10.0.0.0/8
   logcollector:
-    enabled: true
+    enabled: false
     image: perconalab/percona-xtradb-cluster-operator:main-logcollector
     #    configuration: |
     #      [OUTPUT]
