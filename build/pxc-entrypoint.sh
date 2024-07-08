@@ -5,6 +5,9 @@ set -o xtrace
 
 trap "exit" SIGTERM
 
+# FKS: Run the HTTP probe server in the background
+/usr/local/bin/probe &
+
 # if command starts with an option, prepend mysqld
 if [ "${1:0:1}" = '-' ]; then
 	set -- mysqld "$@"
