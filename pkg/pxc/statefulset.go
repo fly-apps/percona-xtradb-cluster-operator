@@ -90,7 +90,7 @@ func StatefulSet(ctx context.Context, cl client.Client, sfs api.StatefulApp, pod
 		ic.Resources = podSpec.Resources
 		ic.ReadinessProbe = nil
 		ic.LivenessProbe = nil
-		ic.Command = []string{"/var/lib/mysql/unsafe-bootstrap.sh"}
+		ic.Command = []string{"/usr/local/bin/unsafe-bootstrap.sh"}
 		pod.InitContainers = append(pod.InitContainers, *ic)
 	}
 

@@ -227,7 +227,7 @@ func PMMAgentScript(cr *api.PerconaXtraDBCluster, dbType string) []corev1.EnvVar
 	return []corev1.EnvVar{
 		{
 			Name:  "PMM_AGENT_PRERUN_SCRIPT",
-			Value: "/var/lib/mysql/pmm-prerun.sh",
+			Value: "/usr/local/bin/pmm-prerun.sh",
 		},
 	}
 }

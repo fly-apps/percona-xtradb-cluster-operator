@@ -46,14 +46,15 @@ LABEL name="Percona XtraDB Cluster Operator" \
 
 COPY LICENSE /licenses/
 COPY --from=go_builder /usr/local/bin/percona-xtradb-cluster-operator /usr/local/bin/percona-xtradb-cluster-operator
-COPY --from=go_builder /usr/local/bin/peer-list /peer-list
-COPY build/pxc-entrypoint.sh /pxc-entrypoint.sh
-COPY build/pxc-init-entrypoint.sh /pxc-init-entrypoint.sh
-COPY build/unsafe-bootstrap.sh /unsafe-bootstrap.sh
-COPY build/pxc-configure-pxc.sh /pxc-configure-pxc.sh
-COPY build/liveness-check.sh /liveness-check.sh
-COPY build/readiness-check.sh /readiness-check.sh
-COPY build/pmm-prerun.sh /pmm-prerun.sh
-COPY build/get-pxc-state /get-pxc-state
+COPY --from=go_builder /usr/local/bin/peer-list /usr/local/bin/peer-list
+COPY --from=go_builder /usr/local/bin/probe /usr/local/bin/probe
+COPY build/pxc-entrypoint.sh /usr/local/bin/pxc-entrypoint.sh
+COPY build/pxc-init-entrypoint.sh /usr/local/bin/pxc-init-entrypoint.sh
+COPY build/unsafe-bootstrap.sh /usr/local/bin/unsafe-bootstrap.sh
+COPY build/pxc-configure-pxc.sh /usr/local/bin/pxc-configure-pxc.sh
+COPY build/liveness-check.sh /usr/local/bin/liveness-check.sh
+COPY build/readiness-check.sh /usr/local/bin/readiness-check.sh
+COPY build/pmm-prerun.sh /usr/local/bin/pmm-prerun.sh
+COPY build/get-pxc-state /usr/local/bin/get-pxc-state
 
 USER 2

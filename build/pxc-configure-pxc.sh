@@ -37,10 +37,14 @@ function mysql_root_exec() {
   set -x
 }
 
+
+
 NODE_IP=$(hostname -I | awk ' { print $1 } ')
 CLUSTER_NAME="$(hostname -f | cut -d'.' -f2)"
 SERVER_NUM=${HOSTNAME/$CLUSTER_NAME-/}
-SERVER_ID=${CLUSTER_HASH}${SERVER_NUM}
+# FKS: Calcuate a unique server from a checksum of the hostname, since the default behavuior generates an alphanumeric string
+HOSTNAME_HASH=$(echo -n "$HOSTNAME" | cksum | awk '{print $1}')
+SERVER_ID=${CLUSTER_HASH}${HOSTNAME_HASH}
 NODE_NAME=$(hostname -f)
 NODE_PORT=3306
 

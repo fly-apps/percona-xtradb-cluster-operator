@@ -91,14 +91,14 @@ func (c *Node) AppContainer(spec *api.PodSpec, secrets string, cr *api.PerconaXt
 			TimeoutSeconds:      15,
 			PeriodSeconds:       30,
 			FailureThreshold:    5,
-		}, "/var/mysql/readiness-check.sh", 8090),
+		}, "/usr/local/bin/readiness-check.sh", 8090),
 		LivenessProbe: app.HTTPCheckProbe(&corev1.Probe{
 			InitialDelaySeconds: livenessDelay,
 			TimeoutSeconds:      5,
 			PeriodSeconds:       10,
-		}, "/var/mysql/liveness-check.sh", 8090),
+		}, "/usr/local/bin/liveness-check.sh", 8090),
 		Args:    []string{"mysqld"},
-		Command: []string{"/var/lib/mysql/pxc-entrypoint.sh"},
+		Command: []string{"/usr/local/bin/pxc-entrypoint.sh"},
 		Ports: []corev1.ContainerPort{
 			{
 				ContainerPort: 3306,
