@@ -187,16 +187,17 @@ func (c *Node) AppContainer(spec *api.PodSpec, secrets string, cr *api.PerconaXt
 				},
 			},
 		},
-		EnvFrom: []corev1.EnvFromSource{
-			{
-				SecretRef: &corev1.SecretEnvSource{
-					LocalObjectReference: corev1.LocalObjectReference{
-						Name: cr.Spec.PXC.EnvVarsSecretName,
-					},
-					Optional: &tvar,
-				},
-			},
-		},
+		// FKS: Optional secrets are not working, see https://github.com/superfly/flyio-virtual-kubelet/issues/115
+		// EnvFrom: []corev1.EnvFromSource{
+		// 	{
+		// 		SecretRef: &corev1.SecretEnvSource{
+		// 			LocalObjectReference: corev1.LocalObjectReference{
+		// 				Name: cr.Spec.PXC.EnvVarsSecretName,
+		// 			},
+		// 			Optional: &tvar,
+		// 		},
+		// 	},
+		// },
 		SecurityContext: spec.ContainerSecurityContext,
 		Resources:       spec.Resources,
 	}
