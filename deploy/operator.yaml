@@ -45,7 +45,7 @@ spec:
               value: percona-xtradb-cluster-operator
             - name: DISABLE_TELEMETRY
               value: "false"
-          image: flyio/percona-xtradb-cluster-operator:fks-2
+          image: flyio/percona-xtradb-cluster-operator:fks-3
           imagePullPolicy: Always
           livenessProbe:
             failureThreshold: 3
