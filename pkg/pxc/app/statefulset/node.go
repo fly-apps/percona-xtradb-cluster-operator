@@ -68,7 +68,8 @@ func (c *Node) AppContainer(spec *api.PodSpec, secrets string, cr *api.PerconaXt
 	if spec.LivenessInitialDelaySeconds != nil {
 		livenessDelay = *spec.LivenessInitialDelaySeconds
 	}
-	tvar := true
+	// FKS: see line 191
+	//tvar := true
 
 	serverIDHash := fnv.New32()
 	serverIDHash.Write([]byte(string(cr.UID)))

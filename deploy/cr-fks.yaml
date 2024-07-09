@@ -52,8 +52,8 @@ spec:
     apply: disabled
     schedule: "0 4 * * *"
   pxc:
-    size: 3
-    image: flyio/percona-xtradb-cluster-operator:pxc-1
+    size: 1
+    image: flyio/percona-xtradb-cluster-operator:pxc-2
     autoRecovery: true
     #    expose:
     #      enabled: true
