@@ -46,7 +46,7 @@ spec:
   #    proxySize: false
   #    backupIfUnhealthy: false
   #  pause: false
-  updateStrategy: SmartUpdate
+  updateStrategy: RollingUpdate
   upgradeOptions:
     versionServiceEndpoint: https://check.percona.com
     apply: disabled
