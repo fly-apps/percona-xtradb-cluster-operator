@@ -53,7 +53,7 @@ spec:
     schedule: "0 4 * * *"
   pxc:
     size: 3
-    image: perconalab/percona-xtradb-cluster-operator:main-pxc8.0
+    image: flyio/percona-xtradb-cluster-operator:pxc-1
     autoRecovery: true
     #    expose:
     #      enabled: true
@@ -201,7 +201,7 @@ spec:
   haproxy:
     enabled: false
     size: 3
-    image: perconalab/percona-xtradb-cluster-operator:main-haproxy
+    image: flyio/percona-xtradb-cluster-operator:haproxy-1
     #    imagePullPolicy: Always
     #    schedulerName: mycustom-scheduler
     #    readinessDelaySec: 15
@@ -539,7 +539,7 @@ spec:
   #     - 10.0.0.0/8
   logcollector:
     enabled: false
-    image: perconalab/percona-xtradb-cluster-operator:main-logcollector
+    image: flyio/percona-xtradb-cluster-operator:logcollector-1
     #    configuration: |
     #      [OUTPUT]
     #           Name  es
@@ -567,7 +567,7 @@ spec:
         cpu: 300m
   backup:
     #    allowParallel: true
-    image: perconalab/percona-xtradb-cluster-operator:main-pxc8.0-backup
+    image: flyio/percona-xtradb-cluster-operator:backup-1
     #    backoffLimit: 6
     #    serviceAccountName: percona-xtradb-cluster-operator
     #    imagePullSecrets:
