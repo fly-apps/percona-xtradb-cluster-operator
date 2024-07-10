@@ -1,9 +1,9 @@
 apiVersion: pxc.percona.com/v1
 kind: PerconaXtraDBCluster
 metadata:
-  name: cluster2
+  name: cluster6
   finalizers:
-    - delete-pxc-pods-in-order
+    # - delete-pxc-pods-in-order
 #    - delete-ssl
 #    - delete-proxysql-pvc
 #    - delete-pxc-pvc
@@ -65,8 +65,8 @@ spec:
     #      loadBalancerIP: 127.0.0.1
     #      annotations:
     #        networking.gke.io/load-balancer-type: "Internal"
-    #      labels:
-    #        rack: rack-22
+    #labels:
+    #  app: rack-22
     #    replicationChannels:
     #    - name: pxc1_to_pxc2
     #      isSource: true
