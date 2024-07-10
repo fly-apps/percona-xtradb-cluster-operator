@@ -1,7 +1,7 @@
 apiVersion: pxc.percona.com/v1
 kind: PerconaXtraDBCluster
 metadata:
-  name: cluster6
+  name: cluster9
   finalizers:
     # - delete-pxc-pods-in-order
 #    - delete-ssl
@@ -54,7 +54,7 @@ spec:
   pxc:
     size: 1
     image: flyio/percona-xtradb-cluster-operator:pxc-3
-    autoRecovery: true
+    autoRecovery: false
     #    expose:
     #      enabled: true
     #      type: LoadBalancer
@@ -189,7 +189,7 @@ spec:
         #          apiGroup: snapshot.storage.k8s.io
         resources:
           requests:
-            storage: 6G
+            storage: 5Gi
     gracePeriod: 600
   #    lifecycle:
   #      preStop:
