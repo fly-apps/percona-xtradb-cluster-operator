@@ -299,6 +299,9 @@ fi
 # if we have CLUSTER_JOIN - then we do not need to perform datadir initialize
 # the data will be copied from another node
 
+# FKS: Test initialization without trying to join a cluster
+unset CLUSTER_JOIN
+
 if [ -z "$CLUSTER_JOIN" ] && [ "$1" = 'mysqld' -a -z "$wantHelp" ]; then
 	# still need to check config, container may have started with --user
 	_check_config "$@"
