@@ -37,10 +37,14 @@ function mysql_root_exec() {
   set -x
 }
 
+
+
 NODE_IP=$(hostname -I | awk ' { print $1 } ')
 CLUSTER_NAME="$(hostname -f | cut -d'.' -f2)"
 SERVER_NUM=${HOSTNAME/$CLUSTER_NAME-/}
-SERVER_ID=${CLUSTER_HASH}${SERVER_NUM}
+# FKS: Calcuate a unique server from a checksum of the hostname, since the default behavuior generates an alphanumeric string
+HOSTNAME_HASH=$(echo -n "$HOSTNAME" | cksum | awk '{print $1}')
+SERVER_ID=${CLUSTER_HASH}${HOSTNAME_HASH}
 NODE_NAME=$(hostname -f)
 NODE_PORT=3306
 
@@ -75,6 +79,7 @@ else
 	grep -E -q "^[#]?extra_port" "$CFG" || sed '/^\[mysqld\]/a extra_port=\n' ${CFG} 1<>${CFG}
 fi
 
+
 if [ "$IS_LOGCOLLECTOR" == 'yes' ]; then
 	grep -E -q "^[#]?log-error" "$CFG" || sed "/^\[mysqld\]/a log-error=$LOG_DATA_DIR/mysqld-error.log\n" ${CFG} 1<>${CFG}
 fi
@@ -83,11 +88,11 @@ grep -E -q "^[#]?wsrep_node_incoming_address" "$CFG" || sed '/^\[mysqld\]/a wsre
 grep -E -q "^[#]?wsrep_provider_options" "$CFG" || sed '/^\[mysqld\]/a wsrep_provider_options="pc.weight=10"\n' ${CFG} 1<>${CFG}
 sed -r "s|^[#]?server_id=.*$|server_id=${SERVER_ID}|" ${CFG} 1<>${CFG}
 sed -r "s|^[#]?coredumper$|coredumper|" ${CFG} 1<>${CFG}
-sed -r "s|^[#]?wsrep_node_address=.*$|wsrep_node_address=${NODE_IP}|" ${CFG} 1<>${CFG}
+sed -r "s|^[#]?wsrep_node_address=.*$|wsrep_node_address=${FLY_PRIVATE_IP}|" ${CFG} 1<>${CFG}
 sed -r "s|^[#]?wsrep_cluster_name=.*$|wsrep_cluster_name=${CLUSTER_NAME}|" ${CFG} 1<>${CFG}
 sed -r "s|^[#]?wsrep_sst_donor=.*$|wsrep_sst_donor=${DONOR_ADDRESS}|" ${CFG} 1<>${CFG}
-sed -r "s|^[#]?wsrep_cluster_address=.*$|wsrep_cluster_address=gcomm://${WSREP_CLUSTER_ADDRESS}|" ${CFG} 1<>${CFG}
-sed -r "s|^[#]?wsrep_node_incoming_address=.*$|wsrep_node_incoming_address=${NODE_NAME}:${NODE_PORT}|" ${CFG} 1<>${CFG}
+sed -r "s|^[#]?wsrep_cluster_address=.*$|wsrep_cluster_address=gcomm://[${WSREP_CLUSTER_ADDRESS}]|" ${CFG} 1<>${CFG}
+sed -r "s|^[#]?wsrep_node_incoming_address=.*$|wsrep_node_incoming_address=[${FLY_PRIVATE_IP}]:${NODE_PORT}|" ${CFG} 1<>${CFG}
 { set +x; } 2>/dev/null
 ESCAPED_XTRABACKUP_PASSWORD=$(printf '%s\n' "$XTRABACKUP_PASSWORD" | sed -e 's/[]\|\&\!$*.^[]/\\&/g')
 sed -r "s|^[#]?wsrep_sst_auth=.*$|wsrep_sst_auth='xtrabackup:$ESCAPED_XTRABACKUP_PASSWORD'|" ${CFG} 1<>${CFG}

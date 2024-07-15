@@ -193,7 +193,7 @@ func (r *ReconcilePerconaXtraDBCluster) updatePod(ctx context.Context, sfs api.S
 			ic.Resources = podSpec.Resources
 			ic.ReadinessProbe = nil
 			ic.LivenessProbe = nil
-			ic.Command = []string{"/var/lib/mysql/unsafe-bootstrap.sh"}
+			ic.Command = []string{"/usr/local/bin/unsafe-bootstrap.sh"}
 			newInitContainers = append(newInitContainers, *ic)
 		}
 	}

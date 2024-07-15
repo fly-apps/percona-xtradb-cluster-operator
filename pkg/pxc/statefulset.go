@@ -90,7 +90,7 @@ func StatefulSet(ctx context.Context, cl client.Client, sfs api.StatefulApp, pod
 		ic.Resources = podSpec.Resources
 		ic.ReadinessProbe = nil
 		ic.LivenessProbe = nil
-		ic.Command = []string{"/var/lib/mysql/unsafe-bootstrap.sh"}
+		ic.Command = []string{"/usr/local/bin/unsafe-bootstrap.sh"}
 		pod.InitContainers = append(pod.InitContainers, *ic)
 	}
 
@@ -98,9 +98,19 @@ func StatefulSet(ctx context.Context, cl client.Client, sfs api.StatefulApp, pod
 	if err != nil {
 		return nil, errors.Wrap(err, "sidecar container")
 	}
+
+	// FKS: Disable sidecar containers, but pass env vars to the main container
+
+	if len(sideC) > 0 {
+		appC.Env = append(appC.Env, sideC[0].Env...)
+	}
+
 	pod.Containers = append(pod.Containers, appC)
-	pod.Containers = append(pod.Containers, sideC...)
-	pod.Containers = api.AddSidecarContainers(log, pod.Containers, podSpec.Sidecars)
+
+	//pod.Containers = append(pod.Containers, sideC...)
+	//pod.Containers = api.AddSidecarContainers(log, pod.Containers, podSpec.Sidecars)
+
+	// VolumesMounts for sidecar containers appear to already be added to the main container
 	pod.Volumes = api.AddSidecarVolumes(log, pod.Volumes, podSpec.SidecarVolumes)
 
 	ls := sfs.Labels()

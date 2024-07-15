@@ -1,7 +1,10 @@
 package app
 
 import (
+	"net/url"
+
 	corev1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/util/intstr"
 )
 
 // Probe is a k8s helper to create Probe object
@@ -19,4 +22,26 @@ func SecretKeySelector(name, key string) *corev1.SecretKeySelector {
 	evs.Key = key
 
 	return evs
+}
+
+func HTTPCheckProbe(probe *corev1.Probe, path string, port int) *corev1.Probe {
+
+	queryParams := url.Values{}
+	queryParams.Set("script", path)
+	fullPath := "/?" + queryParams.Encode()
+
+	return &corev1.Probe{
+		ProbeHandler: corev1.ProbeHandler{
+			HTTPGet: &corev1.HTTPGetAction{
+				Path: fullPath,
+				Port: intstr.FromInt(port),
+			},
+		},
+		InitialDelaySeconds:           probe.InitialDelaySeconds,
+		TimeoutSeconds:                probe.TimeoutSeconds,
+		PeriodSeconds:                 probe.PeriodSeconds,
+		FailureThreshold:              probe.FailureThreshold,
+		SuccessThreshold:              probe.SuccessThreshold,
+		TerminationGracePeriodSeconds: probe.TerminationGracePeriodSeconds,
+	}
 }

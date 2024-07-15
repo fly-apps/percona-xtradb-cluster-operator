@@ -5,6 +5,9 @@ set -o xtrace
 
 trap "exit" SIGTERM
 
+# FKS: Run the HTTP probe server in the background
+/usr/local/bin/probe &
+
 # if command starts with an option, prepend mysqld
 if [ "${1:0:1}" = '-' ]; then
 	set -- mysqld "$@"
@@ -232,7 +235,7 @@ NODE_PORT=3306
 # Is running in Kubernetes/OpenShift, so find all other pods belonging to the cluster
 if [ -n "$PXC_SERVICE" ]; then
 	echo "Percona XtraDB Cluster: Finding peers"
-	/var/lib/mysql/peer-list -on-start="/var/lib/mysql/pxc-configure-pxc.sh" -service="${PXC_SERVICE}"
+	/usr/local/bin/peer-list -on-start="/usr/local/bin/pxc-configure-pxc.sh" -service="${PXC_SERVICE}"
 	CLUSTER_JOIN="$(grep '^wsrep_cluster_address=' "$CFG" | cut -d '=' -f 2 | sed -e 's^.*gcomm://^^')"
 	echo "Cluster address set to: $CLUSTER_JOIN"
 elif [ -n "$DISCOVERY_SERVICE" ]; then
@@ -295,6 +298,9 @@ fi
 
 # if we have CLUSTER_JOIN - then we do not need to perform datadir initialize
 # the data will be copied from another node
+
+# FKS: Test initialization without trying to join a cluster
+unset CLUSTER_JOIN
 
 if [ -z "$CLUSTER_JOIN" ] && [ "$1" = 'mysqld' -a -z "$wantHelp" ]; then
 	# still need to check config, container may have started with --user
@@ -590,7 +596,7 @@ if [ "$1" = 'mysqld' -a -z "$wantHelp" ]; then
 	fi
 	if [ -n "$PXC_SERVICE" ]; then
 		function get_primary() {
-			/var/lib/mysql/peer-list -on-start=/var/lib/mysql/get-pxc-state -service="$PXC_SERVICE" 2>&1 \
+			/usr/local/bin/peer-list -on-start=/usr/local/bin/get-pxc-state -service="$PXC_SERVICE" 2>&1 \
 				| grep wsrep_ready:ON:wsrep_connected:ON:wsrep_local_state_comment:Synced:wsrep_cluster_status:Primary \
 				| sort \
 				| tail -1 \

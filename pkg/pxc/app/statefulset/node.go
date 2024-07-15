@@ -68,7 +68,8 @@ func (c *Node) AppContainer(spec *api.PodSpec, secrets string, cr *api.PerconaXt
 	if spec.LivenessInitialDelaySeconds != nil {
 		livenessDelay = *spec.LivenessInitialDelaySeconds
 	}
-	tvar := true
+	// FKS: see line 191
+	//tvar := true
 
 	serverIDHash := fnv.New32()
 	serverIDHash.Write([]byte(string(cr.UID)))
@@ -86,19 +87,19 @@ func (c *Node) AppContainer(spec *api.PodSpec, secrets string, cr *api.PerconaXt
 		Name:            app.Name,
 		Image:           spec.Image,
 		ImagePullPolicy: spec.ImagePullPolicy,
-		ReadinessProbe: app.Probe(&corev1.Probe{
+		ReadinessProbe: app.HTTPCheckProbe(&corev1.Probe{
 			InitialDelaySeconds: redinessDelay,
 			TimeoutSeconds:      15,
 			PeriodSeconds:       30,
 			FailureThreshold:    5,
-		}, "/var/lib/mysql/readiness-check.sh"),
-		LivenessProbe: app.Probe(&corev1.Probe{
+		}, "/usr/local/bin/readiness-check.sh", 8090),
+		LivenessProbe: app.HTTPCheckProbe(&corev1.Probe{
 			InitialDelaySeconds: livenessDelay,
 			TimeoutSeconds:      5,
 			PeriodSeconds:       10,
-		}, "/var/lib/mysql/liveness-check.sh"),
+		}, "/usr/local/bin/liveness-check.sh", 8090),
 		Args:    []string{"mysqld"},
-		Command: []string{"/var/lib/mysql/pxc-entrypoint.sh"},
+		Command: []string{"/usr/local/bin/pxc-entrypoint.sh"},
 		Ports: []corev1.ContainerPort{
 			{
 				ContainerPort: 3306,
@@ -187,16 +188,17 @@ func (c *Node) AppContainer(spec *api.PodSpec, secrets string, cr *api.PerconaXt
 				},
 			},
 		},
-		EnvFrom: []corev1.EnvFromSource{
-			{
-				SecretRef: &corev1.SecretEnvSource{
-					LocalObjectReference: corev1.LocalObjectReference{
-						Name: cr.Spec.PXC.EnvVarsSecretName,
-					},
-					Optional: &tvar,
-				},
-			},
-		},
+		// FKS: Optional secrets are not working, see https://github.com/superfly/flyio-virtual-kubelet/issues/115
+		// EnvFrom: []corev1.EnvFromSource{
+		// 	{
+		// 		SecretRef: &corev1.SecretEnvSource{
+		// 			LocalObjectReference: corev1.LocalObjectReference{
+		// 				Name: cr.Spec.PXC.EnvVarsSecretName,
+		// 			},
+		// 			Optional: &tvar,
+		// 		},
+		// 	},
+		// },
 		SecurityContext: spec.ContainerSecurityContext,
 		Resources:       spec.Resources,
 	}
